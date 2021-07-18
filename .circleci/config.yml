@@ -1,7 +1,5 @@
 version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@2.0
 
 commands:
   destroy-environments:
@@ -117,10 +115,10 @@ jobs:
             npm audit --audit-level=critical
 
   deploy-infrastructure:
-    executor: aws-cli/default
+    docker:
+    - image: amazon/aws-cli
     steps:
       - checkout
-      - aws-cli/setup
       - run:
           name: Ensure back-end infrastructure exists
           command: |
