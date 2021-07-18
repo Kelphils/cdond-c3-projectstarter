@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@2.0
+
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -120,30 +123,27 @@ jobs:
             npm audit --audit-level=critical
 
   deploy-infrastructure:
-    docker:
-      - image: circleci/node:13.8.0
+    executor: aws-cli/default
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      - aws-cli/setup
       - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your back-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLECI_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLECI_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your front-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople \
+              --stack-name "udapeople-frontend-${CIRCLECI_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLECI_WORKFLOW_ID:0:7}"  
+              
       # - run:
       #     name: Add back-end ip to ansible inventory
       #     command: |
@@ -307,10 +307,11 @@ workflows:
       # - scan-frontend:
       #     requires: [build-frontend]
       - deploy-infrastructure:
+          context: aws
           requires: [test-frontend, test-backend]
           filters:
             branches:
-              only: [test-feature-branch]
+              only: [master]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
       # - run-migrations:
