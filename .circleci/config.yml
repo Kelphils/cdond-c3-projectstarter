@@ -307,7 +307,6 @@ workflows:
       # - scan-frontend:
       #     requires: [build-frontend]
       - deploy-infrastructure:
-          context: aws
           requires: [test-frontend, test-backend]
           filters:
             branches:
