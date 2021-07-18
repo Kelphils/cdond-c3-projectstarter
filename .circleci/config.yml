@@ -99,7 +99,7 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       - run:
-          name: Auditing front-end
+          name: Audit front-end
           command: |
             cd frontend
             npm audit --audit-level=critical            
