@@ -45,7 +45,9 @@ jobs:
             npm i
             npm run build
       - save_cache:
-          paths: [frontend/node_modules]
+          paths: 
+            - frontend/node_modules
+            - frontend/dist
           key: frontend-build
 
   build-backend:
@@ -62,7 +64,9 @@ jobs:
              npm i
              npm run build
       - save_cache:
-          paths: [backend/node_modules]
+          paths: 
+            - backend/node_modules
+            - backend/dist
           key: backend-build
 
   test-frontend:
@@ -247,9 +251,6 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["cd:f9:12:93:d3:03:ca:28:35:d0:0e:0c:5a:c8:79:ca"]
-      - run:
-          name: Installing dependencies for attach_workspace
-          command: apk add --update tar gzip
       - attach_workspace:
           at: .
       - restore_cache:
@@ -259,7 +260,9 @@ jobs:
           command: apk add --update ansible
       - run:
           name: zip dist files
-          command: cd /home/circleci/project/backend/dist && tar -czf /root/project/backend.tgz *
+          command: |
+            cd /backend/node_modules
+            cd /backend/dist
       - run:
           name: Deploying Udapeople backend
           command: |
