@@ -324,7 +324,7 @@ jobs:
             else
               return 1
             fi 
-      # - revert-migrations
+      - revert-migrations
       # - destroy-environments
 
   # cloudfront-update:
