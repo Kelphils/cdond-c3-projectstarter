@@ -159,7 +159,7 @@ jobs:
           paths:
             - .circleci/ansible/inventory.txt
             - .circleci/ansible/ec2-ip.txt
-      - destroy-environments      
+      # - destroy-environments      
 
   configure-infrastructure:
     docker:
@@ -189,7 +189,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
             unzip awscliv2.zip && \
             ./aws/install
-      - destroy-environments     
+      # - destroy-environments     
 
   run-migrations:
     docker:
@@ -212,8 +212,8 @@ jobs:
       - run:
           when: on_fail
           command: sudo apt-get update && sudo apt-get install -y awscli curl grep
-      - revert-migrations
-      - destroy-environments      
+      # - revert-migrations
+      # - destroy-environments      
 
   deploy-frontend:
     docker:
@@ -241,8 +241,8 @@ jobs:
       - run:
           when: on_fail
           command: sudo apt-get update && sudo apt-get install -y awscli curl
-      - revert-migrations
-      - destroy-environments     
+      # - revert-migrations
+      # - destroy-environments     
                     
   deploy-backend:
     docker:
@@ -277,8 +277,8 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
             unzip awscliv2.zip && \
             ./aws/install
-      - revert-migrations
-      - destroy-environments  
+      # - revert-migrations
+      # - destroy-environments  
 
   smoke-test:
     docker:
@@ -294,8 +294,12 @@ jobs:
           name: Frontend smoke test.
           command: |
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com"
-            curl -s ${URL} | grep -q "Welcome"
-            
+            if curl -s ${URL} | grep -q "Welcome"
+            then
+              return 0
+            else
+              return 1
+            fi
       - run:
           name: Backend smoke test.
           command: |
@@ -307,9 +311,8 @@ jobs:
             else
               return 1
             fi 
-      - revert-migrations
-      - destroy-environments
-
+      # - revert-migrations
+      # - destroy-environments
 
   # cloudfront-update:
   #   docker:
