@@ -64,9 +64,9 @@ jobs:
              npm i
              npm run build
       - save_cache:
-          paths: 
-            - backend/node_modules
-            - backend/dist
+          paths:
+            - /home/circleci/project/backend/node_modules
+            - /home/circleci/project/backend/dist
           key: backend-build
 
   test-frontend:
@@ -159,7 +159,7 @@ jobs:
           paths:
             - .circleci/ansible/inventory.txt
             - .circleci/ansible/ec2-ip.txt
-      #- destroy-environments      
+      - destroy-environments      
 
   configure-infrastructure:
     docker:
@@ -189,7 +189,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
             unzip awscliv2.zip && \
             ./aws/install
-     # - destroy-environments     
+      - destroy-environments     
 
   run-migrations:
     docker:
@@ -213,7 +213,7 @@ jobs:
           when: on_fail
           command: sudo apt-get update && sudo apt-get install -y awscli curl grep
       - revert-migrations
-     # - destroy-environments      
+      - destroy-environments      
 
   deploy-frontend:
     docker:
@@ -254,21 +254,20 @@ jobs:
       - attach_workspace:
           at: .
       - restore_cache:
-          keys: [backend-build]
+          keys: 
+            - backend-build
       - run:
           name: Installing Ansible
           command: apk add --update ansible
       - run:
           name: zip dist files
-          command: |
-            cd /backend/node_modules
-            cd /backend/dist
+          command: cd /home/circleci/project/backend/dist && tar -czf /root/project/backend.tgz *
       - run:
-          name: Deploying Udapeople backend
+          name: Deploy backend
           command: |
             ansible-playbook .circleci/ansible/deploy-backend.yml -i .circleci/ansible/inventory.txt
       - run:
-          name: Installing awsCli
+          name: Install awscli
           when: on_fail
           command: |
             apk add --update curl && \
