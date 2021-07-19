@@ -144,16 +144,27 @@ jobs:
               --parameter-overrides ID=${WORKFLOW_ID}  
               
       - run:
-          name: Adding back-end Ip to Ansible inventory
+          name: Adding back-end Ip to Ansible inventory and save to memstash
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
+              --filters "Name=tag:Name,Values=backend-${WORKFLOW_ID}" \
               --output text > .circleci/ansible/ec2-ip.txt
             cat .circleci/ansible/ec2-ip.txt >> .circleci/ansible/inventory.txt
+            BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=backend-${WORKFLOW_ID}" \
+              --output text)
+            curl -H "Content-Type: text/plain" -H "token: ${WORKFLOW_ID}" --request PUT --data "http://$BACKEND_IP:3030" https://api.memstash.io/values/udapeople_backend_url
+            
       - run:
           name: Installing dependencies for persist_to_workspace
           command: yum -y install tar gzip
+      - run:
+          name: View content of files
+          command: |
+            cat .circleci/ansible/ec2-ip.txt
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: .
           paths:
@@ -303,9 +314,11 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export API_URL="http://`cat .circleci/ansible/ec2-ip.txt`:3030/api/status"
-            curl -v "${API_URL}"
-            if curl -s "${API_URL}" | grep ok
+            BACKEND_IP=$(curl -H "token: ${WORKFLOW_ID}" --request GET https://api.memstash.io/values/udapeople_backend_url)
+            URL="$BACKEND_IP/api/status"
+            echo $URL
+            curl -v "${URL}"
+            if curl -s "${URL}" | grep ok
             then
               return 0
             else
