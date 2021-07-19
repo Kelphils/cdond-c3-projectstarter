@@ -260,8 +260,8 @@ jobs:
           name: Installing Ansible
           command: apk add --update ansible
       - run:
-          name: zip dist files
-          command: cd /home/circleci/project/backend/dist && tar -czf /root/project/backend.tgz *
+          name: zip backend
+          command: tar -C backend -czvf artifact.tar.gz .
       - run:
           name: Deploy backend
           command: |

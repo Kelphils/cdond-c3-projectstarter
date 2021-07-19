@@ -1,41 +1,34 @@
 ---
-- name: create app dir
+- name: "Creates directory"
   file:
-    path: /home/ubuntu/udapeople
+    path: /home/ubuntu/backend
     state: directory
-
-- name: copy backend dist
+    
+- name: "Move backend files to remote server."
+  become: true
   copy:
-    src: ../../backend.tgz
-    dest: /home/ubuntu/udapeople
+    src: /root/project/backend
+    dest: /home/ubuntu
 
-- name: copy package.json
-  copy:
-    src: ../../backend/package.json
-    dest: /home/ubuntu/udapeople
-
-- name: install app
-  shell: npm install --production
-  args:
-    chdir: /home/ubuntu/udapeople
-
-- name: unzip dist files
+- name: "Install dependencies"
   shell: |
-    tar -xzvf backend.tgz
-  args:
-    chdir: /home/ubuntu/udapeople
-
-- name: start the app
+    cd /home/ubuntu/backend   
+    ls -la 
+    npm install
+- name: "run server"
+  become: true
   shell: |
-    export ENVIRONMENT=production
-    export NODE_ENV=production
-    export TYPEORM_CONNECTION="{{ lookup('env', 'TYPEORM_CONNECTION') }}"
-    export TYPEORM_HOST="{{ lookup('env', 'TYPEORM_HOST') }}"
-    export TYPEORM_PORT="{{ lookup('env', 'TYPEORM_PORT') }}"
-    export TYPEORM_ENTITIES=./modules/domain/**/*.entity\{.ts,.js\}
-    export TYPEORM_USERNAME="{{ lookup('env', 'TYPEORM_USERNAME') }}"
-    export TYPEORM_PASSWORD="{{ lookup('env', 'TYPEORM_PASSWORD') }}"
-    export TYPEORM_DATABASE="{{ lookup('env', 'TYPEORM_DATABASE') }}"
-    pm2 start main.js --name udapeople
-  args:
-    chdir: /home/ubuntu/udapeople
+    cd /home/ubuntu/backend
+    pm2 start npm run start
+    pm2 ls
+  environment:
+     ENVIRONMENT: production
+     TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
+     TYPEORM_MIGRATIONS_DIR: "./migrations"
+     TYPEORM_MIGRATIONS: "./migrations/*.js"
+     TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
+     TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
+     TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+     TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
+     TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
+     TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
