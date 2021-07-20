@@ -348,10 +348,10 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            aws cloudformation update-stack \
+            aws cloudformation deploy \
               --use-previous-template \
               --stack-name udapeople-cloudfront-${WORKFLOW_ID} \
-              --parameter-overrides ID=${WORKFLOW_ID} 
+              --parameter-overrides WorkflowID=${WORKFLOW_ID} 
       - revert-migrations
       - destroy-environments
 
