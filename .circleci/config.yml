@@ -349,7 +349,8 @@ jobs:
           name: Update cloudfront distribution
           command: |
             aws cloudformation deploy \
-              --use-previous-template \
+              --template-file .circleci/files/cloudfront.yml \
+              --region ${AWS_DEFAULT_REGION} \
               --stack-name udapeople-cloudfront-${WORKFLOW_ID} \
               --parameter-overrides WorkflowID=${WORKFLOW_ID} 
       - revert-migrations
