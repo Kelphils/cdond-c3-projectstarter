@@ -12,7 +12,7 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${WORKFLOW_ID}
-            aws s3 rm s3://udapeople-bucket-${WORKFLOW_ID}/ --recursive
+            aws s3 rm s3://udapeople-${WORKFLOW_ID}/ --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-${WORKFLOW_ID}
 
   revert-migrations:
@@ -350,8 +350,8 @@ jobs:
           command: |
             aws cloudformation update-stack \
               --use-previous-template \
-              --stack-name cloudfront \
-              --parameters ParameterKey=WorkflowID,ParameterValue=${WORKFLOW_ID},UsePreviousValue=false 
+              --stack-name udapeople-cloudfront-${WORKFLOW_ID} \
+              --parameter-overrides ID=${WORKFLOW_ID} 
       - revert-migrations
       - destroy-environments
 
