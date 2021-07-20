@@ -361,10 +361,9 @@ jobs:
           root: ~/
           paths:
             - old_cloudfront_id.txt
-      - destroy-environment:
-          workflow_id: ${WORKFLOW_ID}
-      - revert-migrations:
-          workflow_id: ${WORKFLOW_ID} 
+      - destroy-environments
+      - revert-migrations
+           
 
   cleanup:
       docker:
