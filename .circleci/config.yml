@@ -186,11 +186,13 @@ jobs:
           fingerprints: ["cd:f9:12:93:d3:03:ca:28:35:d0:0e:0c:5a:c8:79:ca"]
       - run:
           name: Installing Ansible
-          command: apk add --update ansible
+          command: |
+            apk add --update ansible
+            ansible-galaxy install weareinteractive.environment
       - run:
           name: Configuring Server
           command: |
-            ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt
+            ansible-playbook .circleci/ansible/configure-server.yml -i .circleci/ansible/inventory.txt -v
       - run:
           name: Installing awsCli
           when: on_fail
@@ -269,14 +271,16 @@ jobs:
             - backend-build
       - run:
           name: Installing Ansible
-          command: apk add --update ansible
+          command: | 
+            apk add --update ansible
+            ansible-galaxy install weareinteractive.environment
       - run:
           name: zip backend
           command: tar -C backend -czvf artifact.tar.gz .
       - run:
           name: Deploy backend
           command: |
-            ansible-playbook .circleci/ansible/deploy-backend.yml -i .circleci/ansible/inventory.txt
+            ansible-playbook .circleci/ansible/deploy-backend.yml -i .circleci/ansible/inventory.txt -v
       - run:
           name: Install awscli
           when: on_fail
