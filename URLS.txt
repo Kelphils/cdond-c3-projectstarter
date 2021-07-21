@@ -1,0 +1,5 @@
+[URL_01] URL to public GitHub repository "https://github.com/Kelphils?tab=repositories"
+[URL_02] Public URL for S3 Bucket "http://udapeople-852515165118.s3-website-us-east-1.amazonaws.com"
+[URL_03] Public URL for CloudFront distribution "https://d26m1bdzgl3mvj.cloudfront.net"
+[URL_04] Public URL for  back-end server in EC2 "http://35.168.32.183:9100/"
+[URL_05] Public URL to Prometheus Server "http://100.25.248.224:9090/"
