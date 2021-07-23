@@ -183,7 +183,7 @@ jobs:
       - attach_workspace:
           at: .
       - add_ssh_keys:
-          fingerprints: ["cd:f9:12:93:d3:03:ca:28:35:d0:0e:0c:5a:c8:79:ca"]
+          fingerprints: ["b4:e6:c2:4d:f9:fc:10:69:09:0e:b3:b7:00:a0:0d:e6"]
       - run:
           name: Installing Ansible
           command: |
@@ -263,7 +263,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["cd:f9:12:93:d3:03:ca:28:35:d0:0e:0c:5a:c8:79:ca"]
+          fingerprints: ["b4:e6:c2:4d:f9:fc:10:69:09:0e:b3:b7:00:a0:0d:e6"]
       - attach_workspace:
           at: .
       - restore_cache:
